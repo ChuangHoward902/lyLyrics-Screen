@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lyLyrics screen</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="header">
+        <div>
+          <p class="kicker">Thermalright LCD</p>
+          <h1>lyLyrics screen</h1>
+        </div>
+        <div class="header-actions">
+          <span id="spotifyStatus" class="badge">未連線</span>
+          <button id="trayStartupButton" class="badge-button" type="button">開機到托盤</button>
+        </div>
+      </header>
+
+      <section class="panel">
+        <label class="field">
+          <span>Spotify Client ID</span>
+          <input id="clientIdInput" type="text" spellcheck="false" placeholder="貼上 Spotify Developer 的 Client ID" />
+        </label>
+
+        <button id="connectButton" class="primary-button">儲存並連接 Spotify</button>
+        <p id="messageLine" class="message">填入 Client ID 後開始連接。</p>
+      </section>
+
+      <section class="panel compact-panel">
+        <label class="field">
+          <span>LCD FPS <strong id="fpsValue">10</strong></span>
+          <input id="fpsInput" class="range-input" type="range" min="10" max="60" step="1" />
+        </label>
+
+        <div class="button-row">
+          <button id="saveFpsButton" class="secondary-button">套用 FPS</button>
+          <button id="enableStartupButton" class="secondary-button">開機自啟動</button>
+          <button id="disableStartupButton" class="secondary-button">取消自啟動</button>
+        </div>
+        <p id="startupLine" class="message">開機自啟動：讀取中</p>
+      </section>
+
+      <section class="status-grid" aria-label="狀態">
+        <div class="status-item">
+          <div class="status-item-header">
+            <span>LCD</span>
+            <button id="refreshButton" class="icon-button" type="button" aria-label="刷新狀態" title="刷新狀態">
+              ↻
+            </button>
+          </div>
+          <strong id="lcdStatusLine">尚未啟動</strong>
+        </div>
+        <div class="status-item">
+          <span>目前播放</span>
+          <strong id="trackLine">等待 Spotify</strong>
+        </div>
+      </section>
+
+      <section class="guide">
+        <h2>使用教學</h2>
+        <ol>
+          <li>到 Spotify Developer Dashboard 建立 App。</li>
+          <li>Redirect URI 加入 <code>http://127.0.0.1:17321/callback</code>。</li>
+          <li>把 Client ID 貼到上方，按下連接並完成瀏覽器授權。</li>
+          <li>啟動前先關閉 TRCC、SignalRGB 或其他會占用 LCD 的軟體。</li>
+        </ol>
+      </section>
+    </main>
+
+    <script src="./renderer.js"></script>
+  </body>
+</html>

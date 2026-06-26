@@ -1,0 +1,60 @@
+{
+  "name": "lylyrics-screen",
+  "version": "0.1.0",
+  "productName": "lyLyrics screen",
+  "description": "A desktop lyric screen for Spotify playback on Thermalright LCDs.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --win nsis"
+  },
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^42.4.1",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.lylyrics.screen",
+    "productName": "lyLyrics screen",
+    "artifactName": "${productName}-${version}-${arch}.${ext}",
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "build/icon.ico",
+        "to": "icon.ico"
+      },
+      {
+        "from": "lcd_bridge.py",
+        "to": "lcd_bridge.py"
+      },
+      {
+        "from": "assets",
+        "to": "assets"
+      },
+      {
+        "from": "requirements-lcd.txt",
+        "to": "requirements-lcd.txt"
+      }
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": "nsis",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "lyLyrics screen"
+    }
+  }
+}

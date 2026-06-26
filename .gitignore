@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.upload/
+__pycache__/
+*.pyc
+*.log
+icon-check.png
+lcd_preview_*.png
+*_probe.png

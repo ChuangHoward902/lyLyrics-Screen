@@ -1,0 +1,4 @@
+libusb-package
+numpy
+pillow
+pyusb
