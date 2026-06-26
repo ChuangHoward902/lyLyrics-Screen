@@ -1,6 +1,6 @@
 # lyLyrics screen
 
-把 Spotify 現正播放的歌詞，直接顯示到 Thermalright USB LCD 上的 Windows app。
+把 Spotify 現正播放的歌詞，直接顯示到利民水冷小螢幕 Thermalright USB LCD 上的 Windows app。
 
 ## 展示
 
