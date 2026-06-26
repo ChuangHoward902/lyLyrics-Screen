@@ -130,6 +130,12 @@ function trayIconPath() {
   return app.isPackaged ? path.join(process.resourcesPath, "icon.ico") : path.join(__dirname, "build", "icon.ico");
 }
 
+function lcdBridgeExecutablePath() {
+  return app.isPackaged
+    ? path.join(process.resourcesPath, "lcd_bridge.exe")
+    : path.join(__dirname, "lcd_bridge.py");
+}
+
 function isLaunchAtStartupEnabled() {
   return fs.existsSync(startupLauncherPath()) || fs.existsSync(legacyStartupLauncherPath());
 }
@@ -486,7 +492,7 @@ function stopSignalRgbMonitor() {
 
 function startLcdBridge() {
   const bridgeCwd = bridgeBasePath();
-  const bridgePath = path.join(bridgeCwd, "lcd_bridge.py");
+  const bridgePath = lcdBridgeExecutablePath();
 
   if (!fs.existsSync(bridgePath)) {
     console.warn("LCD bridge not found, skipping direct LCD output.");
@@ -502,9 +508,10 @@ function startLcdBridge() {
     return;
   }
 
-  const pythonCommand = process.env.PYTHON || "python";
   setLcdStatus({ connected: false, message: "正在啟動 LCD bridge..." });
-  lcdBridge = spawn(pythonCommand, ["-u", bridgePath], {
+  const launchCommand = app.isPackaged ? bridgePath : (process.env.PYTHON || "python");
+  const launchArgs = app.isPackaged ? [] : ["-u", bridgePath];
+  lcdBridge = spawn(launchCommand, launchArgs, {
     cwd: bridgeCwd,
     stdio: ["pipe", "pipe", "pipe"],
     windowsHide: true,

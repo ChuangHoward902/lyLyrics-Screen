@@ -6,8 +6,9 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "build:bridge": "python -m PyInstaller --noconfirm --clean --onefile --name lcd_bridge --distpath dist\\bridge --workpath dist\\bridge-work --specpath dist\\bridge-spec --add-data \"%CD%\\assets\\fonts;assets\\fonts\" --collect-all libusb_package --collect-submodules usb lcd_bridge.py",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder --win nsis"
+    "dist": "npm run build:bridge && electron-builder --win nsis"
   },
   "license": "MIT",
   "type": "commonjs",
@@ -32,16 +33,8 @@
         "to": "icon.ico"
       },
       {
-        "from": "lcd_bridge.py",
-        "to": "lcd_bridge.py"
-      },
-      {
-        "from": "assets",
-        "to": "assets"
-      },
-      {
-        "from": "requirements-lcd.txt",
-        "to": "requirements-lcd.txt"
+        "from": "dist/bridge/lcd_bridge.exe",
+        "to": "lcd_bridge.exe"
       }
     ],
     "win": {
