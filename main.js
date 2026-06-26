@@ -291,6 +291,67 @@ function hideMainWindowToTray() {
   setWindowSkipTaskbar(true);
 }
 
+function sendBridgeCommand(command) {
+  if (!lcdBridge || !lcdBridge.stdin.writable || !lcdBridgeReady) {
+    return false;
+  }
+
+  try {
+    lcdBridge.stdin.write(`${JSON.stringify({ type: "command", command })}\n`);
+    return true;
+  } catch (error) {
+    console.warn(`Failed to send bridge command: ${error.message}`);
+    return false;
+  }
+}
+
+function stopLcdBridge(clearScreen = false) {
+  if (!lcdBridge) {
+    lcdBridgeReady = false;
+    return;
+  }
+
+  if (clearScreen) {
+    sendBridgeCommand("clear");
+  }
+
+  try {
+    if (lcdBridge.stdin && !lcdBridge.stdin.destroyed) {
+      lcdBridge.stdin.end();
+    }
+  } catch (error) {
+    console.warn(`Failed to close LCD bridge stdin: ${error.message}`);
+  }
+
+  const bridge = lcdBridge;
+  lcdBridge = null;
+  lcdBridgeReady = false;
+
+  if (bridge.exitCode === null && !bridge.killed) {
+    const killBridge = () => {
+      if (bridge.exitCode === null && !bridge.killed) {
+        bridge.kill();
+      }
+    };
+
+    if (clearScreen) {
+      const timer = setTimeout(killBridge, 300);
+      if (typeof timer.unref === "function") {
+        timer.unref();
+      }
+    } else {
+      killBridge();
+    }
+  }
+}
+
+function shutdownApp() {
+  stopPolling();
+  stopSignalRgbMonitor();
+  cleanupAuthListener();
+  stopLcdBridge(true);
+}
+
 function updateTrayMenu() {
   if (!tray) {
     return;
@@ -319,6 +380,7 @@ function updateTrayMenu() {
       label: "離開",
       click: () => {
         isQuitting = true;
+        shutdownApp();
         app.quit();
       },
     },
@@ -499,6 +561,10 @@ function startLcdBridge() {
     return;
   }
 
+  if (lcdBridge || lcdBridgeReady) {
+    stopLcdBridge(false);
+  }
+
   if (detectSignalRgbService()) {
     signalRgbOccupied = true;
     setLcdStatus({
@@ -643,7 +709,7 @@ async function fetchLyrics(track) {
 
   const getResponse = await fetch(`https://lrclib.net/api/get?${baseParams.toString()}`, {
     headers: {
-      "User-Agent": "lyLyrics-screen/0.1.0",
+      "User-Agent": "lyLyrics-screen/0.2.0",
     },
   });
 
@@ -660,7 +726,7 @@ async function fetchLyrics(track) {
 
   const searchResponse = await fetch(`https://lrclib.net/api/search?${searchParams.toString()}`, {
     headers: {
-      "User-Agent": "lyLyrics-screen/0.1.0",
+      "User-Agent": "lyLyrics-screen/0.2.0",
     },
   });
 
@@ -1053,17 +1119,14 @@ app.whenReady().then(() => {
   });
 });
 
+app.on("before-quit", () => {
+  isQuitting = true;
+  shutdownApp();
+});
+
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
-    if (!isQuitting) {
-      return;
-    }
-    stopPolling();
-    stopSignalRgbMonitor();
-    if (lcdBridge && !lcdBridge.killed) {
-      lcdBridge.kill();
-    }
-    app.quit();
+    return;
   }
 });
 

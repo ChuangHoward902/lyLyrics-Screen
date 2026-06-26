@@ -481,6 +481,10 @@ def render_frame(state: dict[str, Any]) -> Image.Image:
     return frame
 
 
+def render_blank_frame(size: tuple[int, int]) -> Image.Image:
+    return Image.new("RGBA", size, (0, 0, 0, 255))
+
+
 def image_to_rgb565_be(image: Image.Image) -> bytes:
     rgb = np.asarray(image.convert("RGB"), dtype=np.uint8)
     r = rgb[:, :, 0].astype(np.uint16)
@@ -647,6 +651,16 @@ def main() -> int:
                 new_state = state_queue.get_nowait()
             except queue.Empty:
                 break
+
+            if new_state.get("command") == "clear":
+                if device.dev is not None:
+                    blank = render_blank_frame((device.width, device.height))
+                    try:
+                        device.send_frame(blank)
+                    except Exception as exc:
+                        log(f"Clear frame failed: {exc}")
+                continue
+
             set_state(new_state)
 
         last_attempt = ensure_device(device, last_attempt)
