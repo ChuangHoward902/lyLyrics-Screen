@@ -6,7 +6,7 @@
 
 ![App showcase](assets/readme/showcase.png)
 
-[展示影片：demo.mp4](assets/readme/demo.mp4)
+![展示影片](assets/readme/demo.gif)
 
 ## 專案連結
 
