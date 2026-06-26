@@ -1,6 +1,6 @@
 {
   "name": "lylyrics-screen",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "productName": "lyLyrics screen",
   "description": "A desktop lyric screen for Spotify playback on Thermalright LCDs.",
   "main": "main.js",
